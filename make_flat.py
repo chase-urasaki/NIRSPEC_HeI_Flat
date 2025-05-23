@@ -38,7 +38,7 @@ OVERSCAN_WIDTH = NIRSPEC_CONSTANTS.OVERSCAN_WIDTH
 FILTER = NIRSPEC_CONSTANTS.NIRSPEC1_70
 
 # Spcifiy dark parth 
-dark_path = 'NIRSPEC_HeI/masterdark.fits'
+dark_path = 'masterdark.fits'
 
 def combine_flats(filenames, masterdark):
 
@@ -286,8 +286,8 @@ if __name__ == "__main__":
         std = hdul["STD"].data if "STD" in hdul else np.zeros_like(masterdark)
         mask = hdul["MASK"].data.astype(bool) if "MASK" in hdul else np.zeros_like(masterdark, dtype=bool)
 
-    data_dir = 'NIRSPEC_HeI/fits/'
-    list_of_flats = 'NIRSPEC_HeI/flats_list.txt'
+    data_dir = 'fits/'
+    list_of_flats = 'flats_list.txt'
 
     filenames = [line.strip() for line in open(list_of_flats)]
     # prepend the directory to each filename
@@ -340,13 +340,19 @@ if __name__ == "__main__":
     mask[masterflat < FLAT_MIN] = True
     mask[masterflat > FLAT_MAX] = True
     mask[:, -RIGHT_MARGIN:] = True
+
+    #display the mask
+    plt.imshow(mask, aspect='auto', origin='lower')
+    plt.colorbar()
+    plt.title(f"Mask for {FILTER}")
+    plt.show()
   
     # Mask out all the values past x = 1200
  
 
     mask = np.logical_or(is_bad_pixel, mask)
     
-    mask[:, 1100:] = True
+    mask[:, 1250:] = True
     # plot the mask 
     plt.imshow(mask, aspect='auto', origin='lower')
     plt.colorbar()
@@ -360,7 +366,7 @@ if __name__ == "__main__":
                         fits.ImageHDU(raw_std, name="STD"),
                         fits.ImageHDU(normalization, name="NORMALIZATION")])
 
-    hdul.writeto(os.path.join('./NIRSPEC_HeI'+ 'masterflat.fits'), overwrite=True)
+    hdul.writeto(os.path.join('./'+ 'masterflat.fits'), overwrite=True)
 
     plt.imshow(masterflat, aspect='auto', origin='lower', vmin=0, vmax=1.5)
     plt.colorbar()
@@ -371,4 +377,11 @@ if __name__ == "__main__":
         plt.plot(lower_edge, color='black')
     plt.show()    
 
+    plt.imshow(masterflat * ~mask, aspect='auto', origin='lower', vmin=0, vmax=1.5)
+    plt.colorbar()
+    plt.title(f"Master Flat for {FILTER} with mask")
+    for o in range(len(hdul["EDGES"].data)):
+        upper_edge, lower_edge = hdul["EDGES"].data[o]
+        plt.plot(upper_edge, color='r')
+        plt.plot(lower_edge, color='black')
 #%%
