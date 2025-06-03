@@ -118,7 +118,7 @@ def combine_darks_robust(filenames, std_threshold=SIGMA_CLIP, min_frames=3, rela
 if __name__ == "__main__":
     #calibration_dir = make_calibration_directory()
     # Specifiy data directory and list of darks
-    data_dir = 'fits'
+    data_dir = '250118'
     list_of_darks = 'darks_list.txt'
 
     filenames = [line.strip() for line in open(list_of_darks)]
@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     # plot the mask
     plt.imshow(median_mask, origin='lower', cmap='gray')
-    plt.title("Median Mask")
+    plt.title("Median Mask") 
     plt.colorbar()
     plt.show()
 
